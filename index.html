@@ -144,7 +144,15 @@
 </head>
 <body>
   <!-- 背景音乐 -->
-  <audio src="https://httpslf26-music-east.douyinstatic.com/obj/ies-music-hj/7495920705440140091.mp3" id="background-music" autoplay="autoplay" controls="controls" loop="loop"></audio>
+  <audio id="background-music" src="https://lf26-music-east.douyinstatic.com/obj/ies-music-hj/7495920705440140091.mp3" loop playsinline>
+   您的浏览器不支持音频播放
+  </audio>
+  
+  <!-- 音乐播放提示 -->
+  <div class="music-prompt" id="music-prompt">
+    点击页面任意位置开始播放音乐
+  </div>
+  
   <div class="stage" id="stage">
     <div class="center-title" id="title">for you ♥</div>
   </div>
@@ -169,6 +177,34 @@ const replay = document.getElementById('replay');
 const title  = document.getElementById('title');
 const music = document.getElementById('background-music');
 const musicPrompt = document.getElementById('music-prompt');
+
+// 处理音乐播放
+function setupMusic() {
+  // 尝试播放音乐的函数
+  function tryPlayMusic() {
+    music.play().then(() => {
+      // 播放成功，隐藏提示
+      musicPrompt.style.opacity = '0';
+      setTimeout(() => {
+        musicPrompt.style.display = 'none';
+      }, 500);
+      // 移除事件监听，避免重复触发
+      document.removeEventListener('click', tryPlayMusic);
+      document.removeEventListener('touchstart', tryPlayMusic);
+    }).catch(error => {
+      console.log('播放失败，需要用户交互:', error);
+    });
+  }
+  
+  // 监听用户交互来触发播放
+  document.addEventListener('click', tryPlayMusic);
+  document.addEventListener('touchstart', tryPlayMusic);
+  
+  // 重放按钮也触发播放
+  replay.addEventListener('click', () => {
+    tryPlayMusic();
+  });
+}
 
 const directions = [
   {dx:'0vw',dy:'-80vh'},{dx:'0vw',dy:'80vh'},
