@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>爱心~</title>
+<title>爱心动画</title>
 <style>
-  /* 原有样式保持不变 */
   html,body{
     height:100%;margin:0;overflow:hidden;
     font-family:"微软雅黑",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
@@ -116,16 +115,6 @@
     to  {opacity:.95; transform:translate(-50%,-50%);}
   }
 
-  .replay{
-    position:absolute;right:18px;bottom:18px;
-    padding:10px 14px;border:none;border-radius:10px;
-    background:rgba(255,255,255,.5);
-    backdrop-filter:blur(8px);
-    color:#222;font-weight:600;cursor:pointer;
-    box-shadow:0 5px 20px rgba(0,0,0,.22);
-  }
-  
-  /* 新增：音乐播放提示样式 */
   .music-prompt {
     position: absolute;
     left: 50%;
@@ -139,27 +128,25 @@
     color: #333;
     z-index: 1000;
     transition: opacity 0.5s ease;
+    text-align: center;
+    max-width: 80%;
   }
 </style>
 </head>
 <body>
-  <!-- 背景音乐 -->
   <audio id="background-music" src="https://lf26-music-east.douyinstatic.com/obj/ies-music-hj/7495920705440140091.mp3" loop playsinline>
    您的浏览器不支持音频播放
   </audio>
   
-  <!-- 音乐播放提示 -->
   <div class="music-prompt" id="music-prompt">
-    点击页面任意位置开始播放音乐
+    点击页面任意位置开始播放音乐和动画
   </div>
   
   <div class="stage" id="stage">
     <div class="center-title" id="title">for you ♥</div>
   </div>
-  <button class="replay" id="replay">重放</button>
 
 <script>
-/* —— 原有脚本保持不变，新增音乐播放控制 —— */
 const tips=[
   '想念在风里飘','月亮为你亮','喜欢你很久了','你是我的心动','温柔落在人间',
   '星光都为你闪','梦里有你真好','世界因你柔软','心跳为你加速','有你真好',
@@ -173,37 +160,31 @@ const tips=[
 ];
 
 const stage  = document.getElementById('stage');
-const replay = document.getElementById('replay');
 const title  = document.getElementById('title');
 const music = document.getElementById('background-music');
 const musicPrompt = document.getElementById('music-prompt');
 
-// 处理音乐播放
+let animationStarted = false;
+
 function setupMusic() {
-  // 尝试播放音乐的函数
-  function tryPlayMusic() {
+  function startAnimationAndMusic() {
+    if (animationStarted) return;
+    
     music.play().then(() => {
-      // 播放成功，隐藏提示
       musicPrompt.style.opacity = '0';
       setTimeout(() => {
         musicPrompt.style.display = 'none';
       }, 500);
-      // 移除事件监听，避免重复触发
-      document.removeEventListener('click', tryPlayMusic);
-      document.removeEventListener('touchstart', tryPlayMusic);
+      
+      play();
+      animationStarted = true;
     }).catch(error => {
-      console.log('播放失败，需要用户交互:', error);
+      console.log('播放失败:', error);
     });
   }
   
-  // 监听用户交互来触发播放
-  document.addEventListener('click', tryPlayMusic);
-  document.addEventListener('touchstart', tryPlayMusic);
-  
-  // 重放按钮也触发播放
-  replay.addEventListener('click', () => {
-    tryPlayMusic();
-  });
+  document.addEventListener('click', startAnimationAndMusic);
+  document.addEventListener('touchstart', startAnimationAndMusic);
 }
 
 const directions = [
@@ -300,10 +281,7 @@ function play(){
   setTimeout(finalBurst, TOTAL_TIME_MS);
 }
 
-// 初始化
 setupMusic();
-play();
-replay.onclick = play;
 </script>
 </body>
 </html>
